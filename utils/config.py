@@ -10,6 +10,8 @@ class Config():
     max_size = 1000
     caffe_pretrain = False
     n_class = 20
+    optim_name = 'SGD' # Adam
+    lr = 0.01
 
 
 

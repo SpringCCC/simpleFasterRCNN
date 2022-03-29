@@ -4,7 +4,7 @@ from utils.config import opt
 from data.dataset import Dataset
 from tqdm import tqdm
 from models.fastercnnvgg16 import FasterRCNNVGG16
-
+from trainer import Traninner
 
 def train(**kwargs):
     opt._parse(kwargs)
@@ -15,9 +15,11 @@ def train(**kwargs):
     # build model
     model = FasterRCNNVGG16()
     model = model.cuda()
+    #
+    trainer = Traninner()
     for img, bbox, label, scale in tqdm(trn_dataloader):
         img, bbox, label = img.cuda().float(), bbox.cuda(), label.cuda()
-        model(img)
+        trainer.train_step(img)
 
 
 if __name__ == '__main__':

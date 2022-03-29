@@ -30,6 +30,15 @@ def loc2bbox(loc, bbox):
     dst_bbox[:, 3] = dst_cx + dst_w / 2
     return dst_bbox
 
+def twobox_iou(bbox1, bbox2):
+    tl = np.maximum(bbox1[:, None, :2], bbox2[None, :, :2])
+    br = np.minimum(bbox1[:, None, 2:], bbox2[None, :, 2:])
+    inter = np.prod(br - tl, axis=2) * (tl < br).all(axis=2) # N*K
+    area1 = np.prod(bbox1[:, 2:] - bbox1[:, :2], axis=1)
+    area2 = np.prod(bbox2[:, 2:] - bbox2[:, :2], axis=1)
+    iou = inter / (area1[: ,None] + area2[None, :] - inter)
+    return iou
+
 
 def cycleconvert_y1x1y2x2_x1y1x2y2(bbox):
     newbbox = np.zeros(bbox.shape, dtype=bbox.dtype)
@@ -64,3 +73,4 @@ def init_weight(ms, mean, std):
     for m in ms:
         m.weight.data.normal_(mean, std)
         m.bias.data.fill_(0)
+
