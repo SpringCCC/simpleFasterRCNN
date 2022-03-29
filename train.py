@@ -16,10 +16,10 @@ def train(**kwargs):
     model = FasterRCNNVGG16()
     model = model.cuda()
     #
-    trainer = Traninner()
+    trainer = Traninner(model)
     for img, bbox, label, scale in tqdm(trn_dataloader):
         img, bbox, label = img.cuda().float(), bbox.cuda(), label.cuda()
-        trainer.train_step(img)
+        trainer.train_step(img, bbox, label)
 
 
 if __name__ == '__main__':

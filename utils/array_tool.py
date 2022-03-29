@@ -30,6 +30,25 @@ def loc2bbox(loc, bbox):
     dst_bbox[:, 3] = dst_cx + dst_w / 2
     return dst_bbox
 
+def bbox2loc(anchor, gt_box):
+    assert anchor.shape==gt_box.shape
+    loc = np.zeros(anchor.shape, dtype=anchor.dtype)
+    anchor_cy, anchor_cx = (anchor[:, 0]+ anchor[:, 2])/2, (anchor[:, 1]+ anchor[:, 3])/2
+    anchor_h, anchor_w = anchor[:, 2] - anchor[:, 0], anchor[:, 3] - anchor[:, 1]
+    gt_box_cy, gt_box_cx = (gt_box[:, 0]+ gt_box[:, 2])/2, (gt_box[:, 1]+ gt_box[:, 3])/2
+    gt_box_h, gt_box_w = gt_box[:, 2] - gt_box[:, 0], gt_box[:, 3] - gt_box[:, 1]
+    # dy = (y_gt - y)/h; dh = log(h_gt/h)
+    loc[:, 0] = (gt_box_cy - anchor_cy) / anchor_h
+    loc[:, 1] = (gt_box_cx - anchor_cx) / anchor_w
+    loc[:, 2] = np.log(gt_box_h / anchor_h)
+    loc[:, 3] = np.log(gt_box_w / anchor_w)
+    return loc
+
+
+
+
+
+
 def twobox_iou(bbox1, bbox2):
     tl = np.maximum(bbox1[:, None, :2], bbox2[None, :, :2])
     br = np.minimum(bbox1[:, None, 2:], bbox2[None, :, 2:])

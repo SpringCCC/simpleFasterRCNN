@@ -29,6 +29,6 @@ class RPN(nn.Module):
         rpn_score = self.rpn_score_net(h)[0] # chw
         rpn_loc = rpn_loc.permute(1,2, 0).reshape(-1, 4)
         rpn_score = rpn_score.permute(1,2, 0).reshape(-1, 2)
-        rpn_score = F.softmax(rpn_score, dim=1)
-        roi = self.proposalcreator(anchor, rpn_loc, rpn_score[:, 1], img_size)
-        return roi
+        rpn_score_softmax = F.softmax(rpn_score, dim=1)
+        roi = self.proposalcreator(anchor, rpn_loc, rpn_score_softmax[:, 1], img_size)
+        return roi, anchor, rpn_loc, rpn_score
