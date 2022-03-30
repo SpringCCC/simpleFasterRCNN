@@ -4,9 +4,9 @@ class Config():
 
 
     # voc_data_dir = '/dataset/PASCAL2007/VOC2007/'
-    # voc_data_dir = "/fastdata/computervision/huangwei/data/train/fasterrcnn/VOCdevkit/VOC2007/"
-    voc_data_dir = r"F:\ImageData\VOCdevkit\VOC2007"
-    num_workers = 4
+    voc_data_dir = "/fastdata/computervision/huangwei/data/train/fasterrcnn/VOCdevkit/VOC2007/"
+    # voc_data_dir = r"F:\ImageData\VOCdevkit\VOC2007"
+    num_workers = 8
     min_size = 600
     max_size = 1000
     caffe_pretrain = False
@@ -14,7 +14,9 @@ class Config():
     optim_name = 'SGD' # Adam
     lr = 0.01
     rpn_sigma = 3
-    head_sigma = 3
+    head_sigma = 1
+
+    env = 'fr'
 
 
 

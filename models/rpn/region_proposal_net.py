@@ -18,7 +18,7 @@ class RPN(nn.Module):
         self.conv1 = nn.Conv2d(opt.in_channel, opt.mid_channel, 3, 1, 1)
         self.rpn_loc_net = nn.Conv2d(opt.mid_channel, n_base_anchor * 4, 1, 1, 0)
         self.rpn_score_net = nn.Conv2d(opt.mid_channel, n_base_anchor * 2, 1, 1,0)
-        at.init_weight([self.conv1, self.rpn_score_net, self.rpn_loc_net], 0, 0.001)
+        at.init_weight([self.conv1, self.rpn_score_net, self.rpn_loc_net], 0, 0.01)
         self.proposalcreator = ProposalCreator(self.training)
 
     def forward(self, x, img_size):

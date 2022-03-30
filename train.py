@@ -5,8 +5,16 @@ from data.dataset import Dataset
 from tqdm import tqdm
 from models.fastercnnvgg16 import FasterRCNNVGG16
 from trainer import Traninner
+import numpy as np
+
 
 def train(**kwargs):
+    seed = 100
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    np.random.seed(seed)
+
+
     opt._parse(kwargs)
 
     # dataset and dataloader
@@ -17,7 +25,7 @@ def train(**kwargs):
     model = model.cuda()
     #
     trainer = Traninner(model)
-    for img, bbox, label, scale in tqdm(trn_dataloader):
+    for ii, (img, bbox, label, scale) in tqdm(enumerate(trn_dataloader)):
         img, bbox, label = img.cuda().float(), bbox.cuda(), label.cuda()
         trainer.train_step(img, bbox, label)
 
