@@ -13,9 +13,10 @@ class VGG16Head(nn.Module):
     def __init__(self, classifier, n_class):
         super(VGG16Head, self).__init__()
         self.classifier = classifier
+        self.n_class = n_class
         self.roi_pool = RoIPool(opt.output_size, opt.spatial_scale)
         self.head_loc_net = nn.Linear(opt.in_channel, (n_class+1)*4)
-        self.head_score_net = nn.Linear(opt.in_channel, (n_class+1)*2)
+        self.head_score_net = nn.Linear(opt.in_channel, n_class+1)
         at.init_weight([self.head_score_net], 0, 0.01)
         at.init_weight([self.head_loc_net], 0, 0.001)
 

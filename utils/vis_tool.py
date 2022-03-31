@@ -41,7 +41,7 @@ class Visual(object):
 
 if __name__ == '__main__':
     img_path = r"/data/computervision/niuyanhao/数据质量/鱼眼/光照/光照异常/方城8场生长场_育肥_11单元_14栏位_20210506080454_0.jpg"
-    img = cv2.imread(img_path)[:, :, ::-1]/255
+    img = cv2.imread(img_path)[:, :, ::-1] / 255
     img = np.transpose(img, (2, 0, 1))
     # imgs = np.random.random((4, 3, 100, 100))
     # imgs = at.toTensor(imgs)

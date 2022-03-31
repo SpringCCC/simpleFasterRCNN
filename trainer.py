@@ -15,7 +15,7 @@ class Traninner(nn.Module):
     def __init__(self, model):
         super(Traninner, self).__init__()
         self.model = model
-        self.head_label = Head_Label()
+        self.head_label = Head_Label(loc_mean=opt.loc_mean, loc_std=opt.loc_std)
         self.rpn_label = RPN_Label()
 
 
@@ -42,6 +42,12 @@ class Traninner(nn.Module):
         rpn_loc_loss = self.loc_loss(at.toTensor(rpn_loc), at.toTensor(rpn_gt_loc), at.toTensor(rpn_gt_label).long(), opt.rpn_sigma)
         # head loss
         head_cls_loss = F.cross_entropy(at.toTensor(head_score), at.toTensor(head_gt_label).long(), ignore_index=-1)
+        # head_loc:n*84
+        n_head_loc = head_loc.shape[0]
+        head_loc = head_loc.reshape((n_head_loc, -1, 4))
+        # head_loc:n*21
+        head_predict_label = head_score.argmax(dim=1)
+        head_loc = head_loc[torch.arange(0,n_head_loc).long().cuda(), head_predict_label]
         head_loc_loss = self.loc_loss(at.toTensor(head_loc), at.toTensor(head_gt_loc),
                                       at.toTensor(head_gt_label).long(), opt.head_sigma)
         loss = rpn_cls_loss + rpn_loc_loss + head_cls_loss + head_loc_loss

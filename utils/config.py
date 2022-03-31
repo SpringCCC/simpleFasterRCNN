@@ -17,6 +17,8 @@ class Config():
     head_sigma = 1
 
     env = 'fr'
+    loc_mean = (0., 0., 0., 0.)
+    loc_std = (0.1, 0.1, 0.2, 0.2)
 
 
 
