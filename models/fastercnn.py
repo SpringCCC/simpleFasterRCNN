@@ -63,13 +63,12 @@ class FasterRCNN(nn.Module):
             roi = at.loc2bbox(at.toNumpy(head_loc), at.toNumpy(roi))
             roi[:, 0::2] = np.clip(roi[:, 0::2], 0, size[0])
             roi[:, 1::2] = np.clip(roi[:, 1::2], 0, size[1])
-
             head_score = F.softmax(at.toTensor(head_score), dim=1)
             predict_bboxs, predict_labels, predict_scores = self._suppress(roi, head_score)
             bboxs.append(predict_bboxs)
             scores.append(predict_scores)
             labels.append(predict_labels)
-        return
+        return bboxs, scores, labels
 
     def _suppress(self, rois, scores):
         # roi:[N*21, 4], score:[N, 21]

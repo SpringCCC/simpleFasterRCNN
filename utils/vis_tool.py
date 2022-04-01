@@ -8,6 +8,31 @@ import torch
 import cv2
 import utils.array_tool as at
 import numpy as np
+
+
+VOC_BBOX_LABEL_NAMES = (
+    'fly',
+    'bike',
+    'bird',
+    'boat',
+    'pin',
+    'bus',
+    'c',
+    'cat',
+    'chair',
+    'cow',
+    'table',
+    'dog',
+    'horse',
+    'moto',
+    'p',
+    'plant',
+    'shep',
+    'sofa',
+    'train',
+    'tv',
+)
+
 class Visual(object):
 
 
@@ -26,6 +51,12 @@ class Visual(object):
     def vis_imgs(self, imgs, winname):
         assert len(imgs.shape)==4
         self.vis.images(imgs, win=winname, opts={'title': winname})
+
+    def vis_img_bboxs(self, img, bboxs, labels, scores, winname):
+        #img: chw
+        cv_img = np.transpose(img.copy(), axes=(1,2,0))
+        for box, label, score in zip(bboxs, labels, scores):
+            cv2.rectangle(cv_img, box[:2], box[2:])
 
     def adapt_size(self, img, max_size=1000):
         c, h, w = img.shape
