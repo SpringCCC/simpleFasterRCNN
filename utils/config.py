@@ -3,9 +3,8 @@
 class Config():
 
 
-    # voc_data_dir = '/dataset/PASCAL2007/VOC2007/'
-    voc_data_dir = "/fastdata/computervision/huangwei/data/train/fasterrcnn/VOCdevkit/VOC2007/"
-    # voc_data_dir = r"F:\ImageData\VOCdevkit\VOC2007"
+    # voc_data_dir = "/fastdata/computervision/huangwei/data/train/fasterrcnn/VOCdevkit/VOC2007/"
+    voc_data_dir = r"F:\ImageData\VOCdevkit\VOC2007"
     num_workers = 8
     min_size = 600
     max_size = 1000
@@ -16,7 +15,8 @@ class Config():
     rpn_sigma = 3
     head_sigma = 1
 
-    env = 'fr'
+    env = '0405'
+    winname = "hw"
     loc_mean = (0., 0., 0., 0.)
     loc_std = (0.1, 0.1, 0.2, 0.2)
 

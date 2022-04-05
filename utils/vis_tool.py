@@ -17,7 +17,7 @@ VOC_BBOX_LABEL_NAMES = (
     'boat',
     'pin',
     'bus',
-    'c',
+    'car',
     'cat',
     'chair',
     'cow',
@@ -25,7 +25,7 @@ VOC_BBOX_LABEL_NAMES = (
     'dog',
     'horse',
     'moto',
-    'p',
+    'person',
     'plant',
     'shep',
     'sofa',
@@ -52,11 +52,29 @@ class Visual(object):
         assert len(imgs.shape)==4
         self.vis.images(imgs, win=winname, opts={'title': winname})
 
-    def vis_img_bboxs(self, img, bboxs, labels, scores, winname):
+    def vis_img_bboxs(self, img, bboxs, labels, winname, scores=None):
         #img: chw
-        cv_img = np.transpose(img.copy(), axes=(1,2,0))
-        for box, label, score in zip(bboxs, labels, scores):
-            cv2.rectangle(cv_img, box[:2], box[2:])
+        img = at.toNumpy(img)
+        bboxs = at.toNumpy(bboxs)
+        labels = at.toNumpy(labels)
+        cv_img = np.transpose(img, axes=(1,2,0)).copy()
+        if scores:
+            if len(bboxs)>0 and len(bboxs[0])>0:
+                for box, label, score in zip(bboxs, labels, scores):
+                    cv2.rectangle(cv_img, (int(box[1]), int(box[0])), (int(box[3]), int(box[2])), (255, 0, 0), 1)
+                    cls_name = VOC_BBOX_LABEL_NAMES[label]
+                    text = "{}:{}".format(cls_name, str(score))
+                    cv2.putText(cv_img, text, (int(box[1]), int(box[0])+15), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 0), 1)
+        else:
+            if len(bboxs) > 0 and len(bboxs[0])>0:
+                for box, label in zip(bboxs, labels):
+                    cv2.rectangle(cv_img, (int(box[1]), int(box[0])), (int(box[3]), int(box[2])), (255, 0, 0), 1)
+                    cls_name = VOC_BBOX_LABEL_NAMES[label]
+                    text = cls_name
+                    cv2.putText(cv_img, text, (int(box[1]), int(box[0])+15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
+        show_img = np.transpose(cv_img.copy(), axes=(2,0,1))
+        self.vis_img(show_img, winname)
+
 
     def adapt_size(self, img, max_size=1000):
         c, h, w = img.shape

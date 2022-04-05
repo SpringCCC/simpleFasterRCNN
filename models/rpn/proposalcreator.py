@@ -9,12 +9,11 @@ import numpy as np
 from torchvision.ops import nms
 
 class ProposalCreator(nn.Module):
-    def __init__(self, istraining):
+    def __init__(self):
         super(ProposalCreator, self).__init__()
-        self.istraining = istraining
 
-    def forward(self, anchor, loc, score, img_size):
-        if self.istraining:
+    def forward(self, parent, anchor, loc, score, img_size):
+        if parent.training:
             n_pre_nms = opt.n_train_pre_nms
             n_post_nms = opt.n_train_post_nms
         else:

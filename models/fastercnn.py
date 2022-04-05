@@ -24,7 +24,7 @@ class FasterRCNN(nn.Module):
         n, c, h, w = x.shape
         img_size = (h, w)
         feature = self.extractor(x)
-        roi = self.rpn(feature, img_size)
+        roi, anchor, rpn_loc, rpn_score = self.rpn(feature, img_size)
         head_loc, head_score = self.head(feature, roi)
         return roi, head_loc, head_score
 
@@ -32,7 +32,6 @@ class FasterRCNN(nn.Module):
     def predict(self, imgs, sizes=None, is_visual=False):
         self.eval()
         self.nms_thresh = 0.3
-        img_h, img_w = imgs.shape[2:]
         prepare_imgs = []
         if is_visual:
             self.score_thresh = 0.7
@@ -53,13 +52,13 @@ class FasterRCNN(nn.Module):
             roi, head_loc, head_score = self(img)
             roi = roi / scale # important
             n_head_loc = head_loc.shape[0]
-            head_loc = head_loc.reshape(n_head_loc, -1, 4)
+            # head_loc = head_loc.reshape(n_head_loc, -1, 4)
             loc_mean, loc_std = np.asarray(opt.loc_mean), np.asarray(opt.loc_std)
             loc_mean = at.toTensor(loc_mean).repeat(self.n_class+1)
             loc_std = at.toTensor(loc_std).repeat(self.n_class+1)
             head_loc = head_loc * loc_std[None] +loc_mean[None]
             head_loc = head_loc.reshape(-1, 4)
-            roi = roi.reshape(n_head_loc, 1, 4).repeat(1,self.n_class+1, 1).reshape(-1, 4)
+            roi = at.toTensor(roi).reshape(n_head_loc, 1, 4).repeat((1,self.n_class+1, 1)).reshape(-1, 4)
             roi = at.loc2bbox(at.toNumpy(head_loc), at.toNumpy(roi))
             roi[:, 0::2] = np.clip(roi[:, 0::2], 0, size[0])
             roi[:, 1::2] = np.clip(roi[:, 1::2], 0, size[1])
@@ -68,6 +67,7 @@ class FasterRCNN(nn.Module):
             bboxs.append(predict_bboxs)
             scores.append(predict_scores)
             labels.append(predict_labels)
+        self.train()
         return bboxs, scores, labels
 
     def _suppress(self, rois, scores):
@@ -76,8 +76,8 @@ class FasterRCNN(nn.Module):
         predict_scores = []
         predict_labels = []
         n_box = len(scores)
-        rois = rois.reshape(n_box, self.n_class, 4)
-        for i in range(1, self.n_class):
+        rois = rois.reshape(n_box, self.n_class+1, 4)
+        for i in range(1, self.n_class+1):
             roi = rois[:, i, :]
             score = scores[:, i]
             roi = at.toNumpy(roi)

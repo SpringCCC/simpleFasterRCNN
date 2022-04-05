@@ -19,7 +19,7 @@ class RPN(nn.Module):
         self.rpn_loc_net = nn.Conv2d(opt.mid_channel, n_base_anchor * 4, 1, 1, 0)
         self.rpn_score_net = nn.Conv2d(opt.mid_channel, n_base_anchor * 2, 1, 1,0)
         at.init_weight([self.conv1, self.rpn_score_net, self.rpn_loc_net], 0, 0.01)
-        self.proposalcreator = ProposalCreator(self.training)
+        self.proposalcreator = ProposalCreator()
 
     def forward(self, x, img_size):
         n, c, h, w = x.shape
@@ -30,5 +30,5 @@ class RPN(nn.Module):
         rpn_loc = rpn_loc.permute(1,2, 0).reshape(-1, 4)
         rpn_score = rpn_score.permute(1,2, 0).reshape(-1, 2)
         rpn_score_softmax = F.softmax(rpn_score, dim=1)
-        roi = self.proposalcreator(anchor, rpn_loc, rpn_score_softmax[:, 1], img_size)
+        roi = self.proposalcreator(self, anchor, rpn_loc, rpn_score_softmax[:, 1], img_size)
         return roi, anchor, rpn_loc, rpn_score
